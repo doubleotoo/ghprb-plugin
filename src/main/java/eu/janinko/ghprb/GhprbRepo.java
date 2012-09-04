@@ -185,4 +185,12 @@ public class GhprbRepo {
 		queuedBuilds.put(id,build);
 	}
 	
+	public void startMergeJob(int id){
+		QueueTaskFuture<?> build = trigger.startJob(new GhprbCause("**/pr/1/merge", id));
+		if(build == null){
+			System.out.println("WUUUT?!!");
+			return;
+		}
+		queuedBuilds.put(id,build);
+	}
 }

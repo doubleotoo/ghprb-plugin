@@ -23,6 +23,7 @@ public class GhprbPullRequest{
 	
 	private boolean shouldRun = true;
 	private boolean askedForApproval = false;
+	private boolean mergeable;
 	private int running; // TODO remove
 	
 	private transient GhprbRepo repo;
@@ -62,6 +63,7 @@ public class GhprbPullRequest{
 			updated = pr.getUpdatedAt();
 		}
 		if(shouldRun){
+			mergeable = pr.getDetailedPullRequest().getMergeable();
 			build();
 		}
 	}
@@ -81,9 +83,13 @@ public class GhprbPullRequest{
 			sb.append("Previous build stopped. ");
 		}
 		sb.append("Triggering build using a head: ").append(head);
+		repo.startJob(id,head);
+		if(mergeable){
+			sb.append("\nAnd triggering build using a github automerge");
+			repo.startMergeJob(id);
+		}
 		addComment(sb.toString());
 		System.out.println("Pull request builder: " + sb.toString());
-		repo.startJob(id,head);
 		running = 3;
 	}
 	
